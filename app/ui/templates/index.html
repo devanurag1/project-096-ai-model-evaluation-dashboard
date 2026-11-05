@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ app_name }} | Enterprise AI Governance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-surface: #111827;
+      --bg-surface-elevated: #1f2937;
+      --border-color: #374151;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #8b5cf6;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 0 0 4rem 0;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+    }
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .role-badge-selector {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem 0.6rem;
+      font-size: 0.85rem;
+    }
+    .role-select {
+      background: transparent;
+      color: var(--text-main);
+      border: none;
+      outline: none;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 0.4rem;
+    }
+
+    .health-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+    }
+    .health-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-green);
+    }
+
+    main {
+      max-width: 1440px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Metric Banners */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .metric-val {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      letter-spacing: -0.03em;
+    }
+    .metric-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Section styling */
+    .section-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .section-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Table styles */
+    .table-container {
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+    th {
+      background: var(--bg-surface-elevated);
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.04em;
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(55, 65, 81, 0.5);
+    }
+    tr:hover {
+      background: rgba(31, 41, 55, 0.4);
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+    .badge-pass {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+    .badge-fail {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+    .badge-exception {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--accent-amber);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease-in-out;
+      font-family: var(--font-sans);
+    }
+    .btn-primary {
+      background: var(--accent-blue);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    .btn-outline {
+      background: transparent;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: var(--bg-surface-elevated);
+      border-color: var(--text-muted);
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--accent-red);
+    }
+    .btn-danger:hover {
+      background: var(--accent-red);
+      color: white;
+    }
+    .btn-sm {
+      padding: 0.25rem 0.55rem;
+      font-size: 0.75rem;
+    }
+
+    /* Charts Layout */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+    .chart-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      min-height: 340px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* Audit Records list */
+    .audit-seq {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+    .hash-snippet {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: rgba(0,0,0,0.3);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    .alert-banner {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+    }
+    .alert-banner.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--accent-green);
+    }
+    .alert-banner.error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">A</div>
+      <div>
+        <div class="brand-title">Apex Global Financial Services</div>
+        <div class="brand-subtitle">AI Model Evaluation & Governance Gateway</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="role-badge-selector">
+        <span style="color:var(--text-muted)">Active Persona:</span>
+        <select id="activeRoleSelect" class="role-select" onchange="switchPersona()">
+          <option value="business_user">Business User (Viewer)</option>
+          <option value="eval_engineer" selected>Alex Chen (ML Engineer)</option>
+          <option value="compliance_officer">Elena Rostova (Compliance Officer)</option>
+          <option value="secops_admin">Marcus Vance (SecOps Admin)</option>
+        </select>
+      </div>
+      <div class="health-pill" id="healthBadge">
+        <span class="health-dot"></span>
+        <span id="healthText">SYSTEM ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Notification Banner -->
+    <div id="alertBanner" class="alert-banner"></div>
+
+    <!-- 4 Key Portfolio Metrics Cards -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Policy Coverage</div>
+        <div class="metric-val" id="metricCoverage">100.0%</div>
+        <div class="metric-sub">All 6 Controls Enforced Systematically</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Blocked Bypass Attempts</div>
+        <div class="metric-val" id="metricBypasses" style="color:var(--accent-red)">14</div>
+        <div class="metric-sub">Adversarial Jailbreaks & Malformed Payloads</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">False-Positive Rate</div>
+        <div class="metric-val" id="metricFP">1.8%</div>
+        <div class="metric-sub">Compliant Financial Inquiries Allowed</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Audit Completeness</div>
+        <div class="metric-val" id="metricAudit" style="color:var(--accent-green)">100.0%</div>
+        <div class="metric-sub">Cryptographically Chained SHA-256 Ledger</div>
+      </div>
+    </div>
+
+    <!-- Charts Row: Radar & Latency vs Cost -->
+    <div class="charts-grid">
+      <div class="chart-box">
+        <div class="section-title">Model Radar: 4 Pillars Comparison</div>
+        <div class="section-desc">Normalized scores for Accuracy, Latency, Cost Efficiency, and Safety Resilience</div>
+        <div style="position:relative; height:260px; margin-top:0.75rem;">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-box">
+        <div class="section-title">Unit Cost vs. p95 Latency SLA</div>
+        <div class="section-desc">Enterprise SLA boundary: p95 &le; 1,200ms | Cost Cap &le; $0.015/1k tokens</div>
+        <div style="position:relative; height:260px; margin-top:0.75rem;">
+          <canvas id="scatterChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Comparison Matrix -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Enterprise Model Candidate Evaluation Matrix</div>
+          <div class="section-desc">Comparing frontier commercial APIs vs private on-premise clusters on Accuracy, Latency, Cost, and Safety</div>
+        </div>
+        <div>
+          <button class="btn btn-outline" onclick="loadComparisonData()">Refresh Evaluations</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Model Candidate</th>
+              <th>Deployment Tier</th>
+              <th>Accuracy (Bench)</th>
+              <th>Latency (p95)</th>
+              <th>Blended Cost / 1k</th>
+              <th>Safety Pass</th>
+              <th>Jailbreak Vuln</th>
+              <th>PII Leak</th>
+              <th>Policy Decision</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="modelTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Control Matrix & Rules Engine -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Control Matrix: Automated Governance Gates</div>
+          <div class="section-desc">Explicit policy rules evaluated deterministically on all inference telemetry</div>
+        </div>
+        <div id="adminRuleAction">
+          <button class="btn btn-outline btn-sm" onclick="showThresholdModal()">Adjust Threshold (Compliance/Admin)</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Control ID</th>
+              <th>Policy Gate</th>
+              <th>Category</th>
+              <th>Threshold Boundary</th>
+              <th>Fail-Closed Behavior</th>
+              <th>Exception Pathway</th>
+            </tr>
+          </thead>
+          <tbody id="matrixTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tamper-Evident Cryptographic Audit Ledger -->
+    <div class="section-card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Tamper-Evident Audit Ledger (Cryptographic SHA-256 Chain)</div>
+          <div class="section-desc">Immutable evidence ledger recording actor, resource, action, result, and HMAC signatures</div>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-outline btn-sm" onclick="verifyAuditLedger()">Verify Cryptographic Chain</button>
+          <button class="btn btn-danger btn-sm" onclick="simulateTampering()">Simulate Adversary Tamper</button>
+        </div>
+      </div>
+
+      <div id="chainVerificationStatus" style="margin-bottom:1rem; font-size:0.85rem; padding:0.6rem 0.85rem; border-radius:6px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.25); color:var(--accent-green);">
+        Verification: All records currently verified against SHA-256 hash-chain and HMAC key.
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Seq #</th>
+              <th>Timestamp</th>
+              <th>Actor & Role</th>
+              <th>Action</th>
+              <th>Resource</th>
+              <th>Result</th>
+              <th>Payload Hash</th>
+              <th>Prev Hash</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Cryptographic Exception Modal -->
+  <div id="exceptionModal" class="modal-backdrop">
+    <div class="modal-box">
+      <h3 style="margin-bottom:0.5rem; font-size:1.15rem;">Grant Cryptographic Exception Token</h3>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1.25rem;">
+        Requires Compliance Officer role. Tokens are cryptographically signed with HMAC-SHA256 and subject to immutable audit logging.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Model Candidate</label>
+        <input type="text" id="excModelId" class="form-input" readonly>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Policy Control Rule</label>
+        <select id="excRuleId" class="form-select">
+          <option value="CTL-CST-03">CTL-CST-03: Cost & Unit Economics Cap</option>
+          <option value="CTL-LAT-02">CTL-LAT-02: p95 Latency SLA (Re-route to Batch Tier)</option>
+          <option value="CTL-ACC-01">CTL-ACC-01: Accuracy (Internal Prototype Only)</option>
+          <option value="CTL-SAF-05">CTL-SAF-05: Adversarial Defense (Requires Frontier Proxy)</option>
+          <option value="CTL-SAF-04" disabled>CTL-SAF-04: Zero PII Leakage (FORBIDDEN: Zero Tolerance)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Business Justification</label>
+        <textarea id="excReason" class="form-textarea" rows="2" placeholder="Explain the business necessity (e.g. specialized financial cross-lingual advisory requires experimental capacity)."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Compensating Control</label>
+        <textarea id="excCompensating" class="form-textarea" rows="2" placeholder="Detail mitigating controls (e.g. hard token usage cap of $5,000/month with hourly alerting)."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Duration (Days, max 90)</label>
+        <input type="number" id="excDuration" class="form-input" value="14" min="1" max="90">
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+        <button class="btn btn-outline" onclick="closeExceptionModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitExceptionToken()">Sign & Issue Token</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let radarChartInstance = null;
+    let scatterChartInstance = null;
+
+    function getActiveRole() {
+      return document.getElementById("activeRoleSelect").value;
+    }
+
+    function switchPersona() {
+      const role = getActiveRole();
+      showAlert(`Persona switched to: ${role}`, "success");
+      loadComparisonData();
+      loadAuditRecords();
+    }
+
+    function showAlert(msg, type = "success") {
+      const b = document.getElementById("alertBanner");
+      b.className = `alert-banner ${type}`;
+      b.textContent = msg;
+      b.style.display = "block";
+      setTimeout(() => { b.style.display = "none"; }, 5000);
+    }
+
+    async function apiFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      options.headers["X-User-Role"] = getActiveRole();
+      return fetch(url, options);
+    }
+
+    async function checkHealth() {
+      try {
+        const res = await apiFetch("/health");
+        const data = await res.json();
+        document.getElementById("healthText").textContent = data.status === "HEALTHY" ? "SYSTEM VERIFIED" : "DEGRADED";
+      } catch (e) {
+        document.getElementById("healthText").textContent = "DISCONNECTED";
+      }
+    }
+
+    async function loadMetrics() {
+      try {
+        const res = await apiFetch("/api/metrics");
+        const data = await res.json();
+        document.getElementById("metricCoverage").textContent = data.policy_coverage_pct.toFixed(1) + "%";
+        document.getElementById("metricBypasses").textContent = data.blocked_bypass_attempts;
+        document.getElementById("metricFP").textContent = data.false_positive_rate_pct.toFixed(1) + "%";
+        document.getElementById("metricAudit").textContent = data.audit_completeness_pct.toFixed(1) + "%";
+      } catch (e) {
+        console.error("Failed to load metrics:", e);
+      }
+    }
+
+    async function loadComparisonData() {
+      try {
+        const res = await apiFetch("/api/eval/compare");
+        if (res.status === 403) {
+          showAlert("Permission denied: Active persona cannot view comparisons.", "error");
+          return;
+        }
+        const data = await res.json();
+        renderComparisonTable(data.comparison_table);
+        renderCharts(data.comparison_table);
+      } catch (e) {
+        console.error("Failed to load comparisons:", e);
+      }
+    }
+
+    function renderComparisonTable(models) {
+      const tbody = document.getElementById("modelTableBody");
+      tbody.innerHTML = "";
+
+      models.forEach(m => {
+        const tr = document.createElement("tr");
+
+        let badgeClass = "badge-pass";
+        if (m.policy_status === "FAIL") badgeClass = "badge-fail";
+        if (m.policy_status === "EXCEPTION_REQUIRED" || m.policy_status === "APPROVED_WITH_EXCEPTION") badgeClass = "badge-exception";
+
+        const piiColor = m.pii_leak_rate > 0 ? "var(--accent-red)" : "var(--accent-green)";
+        const jailbreakColor = m.adversarial_vuln > 5.0 ? "var(--accent-red)" : "var(--text-main)";
+
+        tr.innerHTML = `
+          <td><strong>${m.model_name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted)">${m.provider}</span></td>
+          <td><span class="badge" style="background:var(--bg-surface-elevated); color:var(--text-muted)">${m.tier}</span></td>
+          <td><strong>${m.accuracy}%</strong></td>
+          <td>${m.latency_p95_ms} ms</td>
+          <td>$${m.cost_per_1k.toFixed(4)}</td>
+          <td>${m.safety_pass_rate}%</td>
+          <td style="color:${jailbreakColor}">${m.adversarial_vuln}%</td>
+          <td style="color:${piiColor}; font-weight:600;">${m.pii_leak_rate}%</td>
+          <td><span class="badge ${badgeClass}">${m.policy_status}</span></td>
+          <td>
+            <div style="display:flex; gap:0.35rem;">
+              <button class="btn btn-primary btn-sm" onclick="triggerRun('${m.model_id}')">Run Eval</button>
+              ${m.policy_status === 'FAIL' || m.policy_status === 'EXCEPTION_REQUIRED' ?
+                `<button class="btn btn-outline btn-sm" onclick="openExceptionModal('${m.model_id}')">Exception</button>` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderCharts(models) {
+      // 1. Radar Chart
+      const radarLabels = ["Accuracy", "Latency Adherence", "Cost Efficiency", "Safety & Guardrails"];
+      const radarDatasets = models.slice(0, 4).map((m, idx) => {
+        const colors = [
+          'rgba(59, 130, 246, 0.7)',
+          'rgba(6, 182, 212, 0.7)',
+          'rgba(16, 185, 129, 0.7)',
+          'rgba(245, 158, 11, 0.7)'
+        ];
+        // Normalize latency: 100 - (latency / 20)
+        const latScore = Math.max(0, Math.min(100, 100 - (m.latency_p95_ms / 20)));
+        // Normalize cost: 100 - (cost * 3000)
+        const costScore = Math.max(0, Math.min(100, 100 - (m.cost_per_1k * 3000)));
+
+        return {
+          label: m.model_name.split(" ")[0],
+          data: [m.accuracy, latScore, costScore, m.safety_pass_rate],
+          borderColor: colors[idx],
+          backgroundColor: colors[idx].replace('0.7', '0.15'),
+          borderWidth: 2,
+        };
+      });
+
+      if (radarChartInstance) radarChartInstance.destroy();
+      const ctxRadar = document.getElementById("radarChart").getContext("2d");
+      radarChartInstance = new Chart(ctxRadar, {
+        type: 'radar',
+        data: { labels: radarLabels, datasets: radarDatasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              angleLines: { color: 'rgba(255,255,255,0.1)' },
+              grid: { color: 'rgba(255,255,255,0.1)' },
+              pointLabels: { color: '#9ca3af', font: { size: 10 } },
+              suggestedMin: 50,
+              suggestedMax: 100,
+            }
+          },
+          plugins: {
+            legend: { labels: { color: '#e5e7eb', boxWidth: 10 } }
+          }
+        }
+      });
+
+      // 2. Scatter / Bubble: Latency vs Cost
+      const scatterData = models.map((m, idx) => ({
+        x: m.latency_p95_ms,
+        y: m.cost_per_1k,
+        label: m.model_name
+      }));
+
+      if (scatterChartInstance) scatterChartInstance.destroy();
+      const ctxScatter = document.getElementById("scatterChart").getContext("2d");
+      scatterChartInstance = new Chart(ctxScatter, {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            label: 'Candidate Models',
+            data: scatterData,
+            backgroundColor: models.map(m => m.policy_status === 'PASS' ? '#10b981' : (m.policy_status === 'FAIL' ? '#ef4444' : '#f59e0b')),
+            pointRadius: 7,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              title: { display: true, text: 'p95 Latency (ms)', color: '#9ca3af' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              ticks: { color: '#9ca3af' }
+            },
+            y: {
+              title: { display: true, text: 'Cost per 1k tokens ($)', color: '#9ca3af' },
+              grid: { color: 'rgba(255,255,255,0.08)' },
+              ticks: { color: '#9ca3af' }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(ctx) {
+                  return `${ctx.raw.label}: ${ctx.raw.x}ms, $${ctx.raw.y}/1k`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadControlMatrix() {
+      try {
+        const res = await apiFetch("/api/policies/matrix");
+        const data = await res.json();
+        const tbody = document.getElementById("matrixTableBody");
+        tbody.innerHTML = "";
+        data.forEach(rule => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><strong style="color:var(--accent-cyan); font-family:var(--font-mono)">${rule.control_id}</strong></td>
+            <td><strong>${rule.name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted)">${rule.description}</span></td>
+            <td><span class="badge" style="background:var(--bg-surface-elevated)">${rule.category}</span></td>
+            <td><code>${rule.boundary}</code></td>
+            <td style="color:var(--accent-red)">${rule.fail_behavior}</td>
+            <td>${rule.exception_pathway}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Failed to load control matrix:", e);
+      }
+    }
+
+    async function loadAuditRecords() {
+      try {
+        const res = await apiFetch("/api/audit/records?limit=10");
+        if (res.status === 403) {
+          document.getElementById("auditTableBody").innerHTML = `
+            <tr><td colspan="8" style="text-align:center; color:var(--accent-amber); padding:2rem;">
+              <strong>Access Denied:</strong> Your active role ('${getActiveRole()}') lacks <code>audit:read</code> permission.<br>
+              Switch persona to <strong>Compliance Officer</strong> or <strong>SecOps Admin</strong> in the top header to inspect the audit ledger.
+            </td></tr>
+          `;
+          return;
+        }
+        const records = await res.json();
+        const tbody = document.getElementById("auditTableBody");
+        tbody.innerHTML = "";
+
+        records.forEach(r => {
+          const tr = document.createElement("tr");
+          const resColor = r.result === "ALLOWED" ? "var(--accent-green)" : (r.result === "DENIED" ? "var(--accent-red)" : "var(--accent-amber)");
+          tr.innerHTML = `
+            <td class="audit-seq">#${r.sequence_id}</td>
+            <td style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono)">${r.timestamp.substring(11, 19)}Z</td>
+            <td><strong>${r.actor.split("@")[0]}</strong><br><span style="font-size:0.75rem; color:var(--text-muted)">${r.role}</span></td>
+            <td><code>${r.action}</code></td>
+            <td style="font-size:0.8rem">${r.resource}</td>
+            <td><strong style="color:${resColor}">${r.result}</strong></td>
+            <td><span class="hash-snippet" title="${r.payload_hash}">${r.payload_hash.substring(0, 10)}...</span></td>
+            <td><span class="hash-snippet" title="${r.prev_hash}">${r.prev_hash.substring(0, 10)}...</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {
+        console.error("Failed to load audit records:", e);
+      }
+    }
+
+    async function triggerRun(modelId) {
+      try {
+        showAlert(`Executing automated evaluation sweep on '${modelId}'...`, "success");
+        const res = await apiFetch("/api/eval/run", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model_id: modelId })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showAlert(`Evaluation finished for ${modelId}: ${data.status} (Evidence: ${data.evidence_hash.substring(0, 12)}...)`, "success");
+          loadComparisonData();
+          loadMetrics();
+          loadAuditRecords();
+        } else {
+          showAlert(`Evaluation failed: ${data.detail?.message || data.detail}`, "error");
+        }
+      } catch (e) {
+        showAlert(`Error: ${e.message}`, "error");
+      }
+    }
+
+    async function verifyAuditLedger() {
+      try {
+        const res = await apiFetch("/api/audit/verify");
+        const data = await res.json();
+        const box = document.getElementById("chainVerificationStatus");
+        if (data.is_valid) {
+          box.style.background = "rgba(16,185,129,0.15)";
+          box.style.borderColor = "rgba(16,185,129,0.3)";
+          box.style.color = "var(--accent-green)";
+          box.innerHTML = `<strong>VERIFIED:</strong> ${data.verification_message} (Checked ${data.total_records} records, Genesis: ${data.genesis_hash.substring(0, 10)}...)`;
+        } else {
+          box.style.background = "rgba(239,68,68,0.2)";
+          box.style.borderColor = "rgba(239,68,68,0.4)";
+          box.style.color = "var(--accent-red)";
+          box.innerHTML = `<strong>ALERT: HASH-CHAIN COMPROMISED!</strong> Broken link at sequence #${data.broken_link_sequence_id}. ${data.verification_message}`;
+        }
+      } catch (e) {
+        showAlert(`Verification error: ${e.message}`, "error");
+      }
+    }
+
+    async function simulateTampering() {
+      try {
+        const res = await apiFetch("/api/audit/tamper-test?sequence_id=1", { method: "POST" });
+        const data = await res.json();
+        showAlert(`Adversarial modification simulated on Record #1! Verification status: ${data.detection_message}`, "error");
+        verifyAuditLedger();
+        loadAuditRecords();
+        loadMetrics();
+      } catch (e) {
+        showAlert(`Tamper test error: ${e.message}`, "error");
+      }
+    }
+
+    function openExceptionModal(modelId) {
+      document.getElementById("excModelId").value = modelId;
+      document.getElementById("exceptionModal").style.display = "flex";
+    }
+
+    function closeExceptionModal() {
+      document.getElementById("exceptionModal").style.display = "none";
+    }
+
+    async function submitExceptionToken() {
+      const modelId = document.getElementById("excModelId").value;
+      const ruleId = document.getElementById("excRuleId").value;
+      const reason = document.getElementById("excReason").value;
+      const comp = document.getElementById("excCompensating").value;
+      const duration = parseInt(document.getElementById("excDuration").value, 10);
+
+      if (!reason || !comp) {
+        showAlert("Please fill in both business justification and compensating control.", "error");
+        return;
+      }
+
+      try {
+        const res = await apiFetch("/api/policies/exceptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model_id: modelId,
+            rule_id: ruleId,
+            reason: reason,
+            compensating_control: comp,
+            duration_days: duration
+          })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          showAlert(`Cryptographic Exception Token ${data.token_id} issued successfully! Re-running evaluation...`, "success");
+          closeExceptionModal();
+          // Trigger evaluation with this token
+          await apiFetch("/api/eval/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model_id: modelId,
+              active_exception_tokens: [data.token_id]
+            })
+          });
+          loadComparisonData();
+          loadAuditRecords();
+        } else {
+          showAlert(`Exception rejected: ${data.detail}`, "error");
+        }
+      } catch (e) {
+        showAlert(`Error: ${e.message}`, "error");
+      }
+    }
+
+    // Initial page load
+    window.addEventListener("DOMContentLoaded", () => {
+      checkHealth();
+      loadMetrics();
+      loadComparisonData();
+      loadControlMatrix();
+      loadAuditRecords();
+    });
+  </script>
+</body>
+</html>
