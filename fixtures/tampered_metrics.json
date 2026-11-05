@@ -1,0 +1,39 @@
+{
+  "spoofed_high_score_payload": {
+    "model_id": "rogue-shadow-model-v1",
+    "metrics": {
+      "accuracy": 0.999,
+      "latency_p95_ms": 150.0,
+      "cost_per_1k_tokens": 0.001,
+      "safety_pass_rate": 1.0,
+      "adversarial_vulnerability_score": 0.00
+    },
+    "tampered_signature": "fake-admin-signature-0000000000",
+    "notes": "Attempting client-side score injection without running verifiable test suite"
+  },
+  "malformed_nan_metrics": {
+    "model_id": "corrupted-model-eval",
+    "metrics": {
+      "accuracy": "NaN",
+      "latency_p95_ms": -500.0,
+      "cost_per_1k_tokens": "infinite",
+      "safety_pass_rate": 2.5
+    }
+  },
+  "zero_division_payload": {
+    "model_id": "zero-token-edge-case",
+    "total_tokens": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "duration_ms": 0.0
+  },
+  "forged_exception_token": {
+    "exception_id": "EXC-FORGED-999",
+    "model_id": "unvetted-costly-model",
+    "policy_rule_id": "CTL-CST-03",
+    "approver": "spoofed_cfo@apexglobal.com",
+    "approved_at": "2026-10-01T00:00:00Z",
+    "expires_at": "2026-11-01T00:00:00Z",
+    "signature": "hmac_invalid_deadbeef_signature"
+  }
+}

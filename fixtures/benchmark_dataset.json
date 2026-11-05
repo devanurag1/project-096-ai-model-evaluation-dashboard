@@ -1,0 +1,74 @@
+[
+  {
+    "id": "BENCH-001",
+    "category": "Regulatory Compliance",
+    "prompt": "What is the mandatory disclosure required under SEC and FINRA rules when presenting past investment performance to retail clients?",
+    "reference_answer": "Past performance is not indicative of future results, and investments are subject to market risks including loss of principal.",
+    "expected_keywords": ["past performance", "future results", "loss of principal", "risk"],
+    "target_metric": "accuracy",
+    "weight": 1.5
+  },
+  {
+    "id": "BENCH-002",
+    "category": "Loan Advisory",
+    "prompt": "A client with a gross monthly income of $10,000 and recurring debt payments of $4,500 asks if their debt-to-income (DTI) ratio qualifies for a conforming conventional mortgage with a 43% DTI ceiling.",
+    "reference_answer": "The client's DTI is 45% ($4,500 / $10,000), which exceeds the 43% ceiling; therefore, they do not qualify without compensating factors.",
+    "expected_keywords": ["45%", "exceeds", "does not qualify", "43%"],
+    "target_metric": "accuracy",
+    "weight": 1.2
+  },
+  {
+    "id": "BENCH-003",
+    "category": "Fee & Rate Calculations",
+    "prompt": "Explain the difference between Annual Percentage Rate (APR) and Annual Percentage Yield (APY) for a retail savings product compounding monthly.",
+    "reference_answer": "APR reflects the nominal annual rate without compounding, whereas APY accounts for compound interest over the year, making APY higher than APR for monthly compounding.",
+    "expected_keywords": ["compounding", "nominal", "APY", "APR", "higher"],
+    "target_metric": "accuracy",
+    "weight": 1.0
+  },
+  {
+    "id": "BENCH-004",
+    "category": "Fraud & Dispute Intake",
+    "prompt": "Under Regulation E, what is the consumer liability window if a customer notifies their financial institution of an unauthorized electronic fund transfer within 2 business days of learning about the loss?",
+    "reference_answer": "Under Regulation E, if the consumer notifies the institution within 2 business days, their liability is limited to the lesser of $50 or the amount of unauthorized transfers before notice.",
+    "expected_keywords": ["$50", "2 business days", "Regulation E", "liability"],
+    "target_metric": "accuracy",
+    "weight": 1.2
+  },
+  {
+    "id": "BENCH-005",
+    "category": "Loan Advisory",
+    "prompt": "Can a borrower with an LTV of 90% cancel Private Mortgage Insurance (PMI) automatically under the Homeowners Protection Act?",
+    "reference_answer": "No. Under the Homeowners Protection Act, PMI cancellation can be requested at 80% LTV and terminates automatically when the mortgage balance reaches 78% of the original property value.",
+    "expected_keywords": ["78%", "80%", "Homeowners Protection Act", "cannot cancel"],
+    "target_metric": "accuracy",
+    "weight": 1.1
+  },
+  {
+    "id": "BENCH-006",
+    "category": "Regulatory Compliance",
+    "prompt": "When is an adverse action notice required under the Equal Credit Opportunity Act (ECOA) Regulation B?",
+    "reference_answer": "An adverse action notice must be provided within 30 days after receiving a completed credit application when credit is denied, terminated, or terms are unfavorably changed.",
+    "expected_keywords": ["30 days", "Regulation B", "ECOA", "denied"],
+    "target_metric": "accuracy",
+    "weight": 1.3
+  },
+  {
+    "id": "BENCH-007",
+    "category": "Fraud & Dispute Intake",
+    "prompt": "What are the required data elements for initiating a Visa chargeback under reason code 10.4 (Other Fraud)?",
+    "reference_answer": "Reason code 10.4 requires cardholder dispute confirmation, transaction identifier, card-not-present evidence, and affirmation that the cardholder did not participate or authorize the transaction.",
+    "expected_keywords": ["cardholder dispute", "transaction", "card-not-present", "unauthorized"],
+    "target_metric": "accuracy",
+    "weight": 1.0
+  },
+  {
+    "id": "BENCH-008",
+    "category": "Fee & Rate Calculations",
+    "prompt": "Calculate the effective monthly interest payment on a $300,000 principal loan with a 6.0% annual interest-only structure.",
+    "reference_answer": "The annual interest is $18,000 (6% of $300,000). The monthly interest payment is $18,000 / 12 = $1,500.",
+    "expected_keywords": ["$1,500", "$18,000", "monthly"],
+    "target_metric": "accuracy",
+    "weight": 1.2
+  }
+]
